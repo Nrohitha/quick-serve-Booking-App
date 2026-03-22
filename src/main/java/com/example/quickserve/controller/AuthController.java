@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = {"http://localhost:5500","http://127.0.0.1:5500","http://localhost:3000"})
 public class AuthController {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -29,19 +31,19 @@ public class AuthController {
                 .role(User.Role.CUSTOMER)
                 .build();
 
-        userRepository.save(user);   // 🔥 THIS IS MUST
+        userRepository.save(user);
 
         return ResponseEntity.ok(ApiResponse.ok("User saved", null));
     }
 
     @PostMapping("/register/provider")
     public ResponseEntity<ApiResponse<String>> registerProvider(@RequestBody RegisterRequest req) {
-
         return ResponseEntity.ok(ApiResponse.ok("Provider registered successfully. Pending verification.", null));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest req) {
+
         Optional<User> userOpt = userRepository.findByEmail(req.getEmail());
 
         if (userOpt.isEmpty()) {
@@ -54,23 +56,24 @@ public class AuthController {
             return ResponseEntity.ok(ApiResponse.ok("Invalid password", null));
         }
 
-
         AuthResponse resp = new AuthResponse();
         resp.setToken("demo-jwt-token");
-        resp.setRole("CUSTOMER");
-        resp.setName("Demo User");
-        resp.setEmail(req.getEmail());
+        resp.setRole(user.getRole().toString());
+        resp.setName(user.getFirstName());
+        resp.setEmail(user.getEmail());
 
-        return ResponseEntity.ok(ApiResponse.ok("Login successful", resp));
+        return ResponseEntity.ok(
+                ApiResponse.ok("Login success", resp)
+        );
     }
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<ApiResponse<String>> verifyOtp(@RequestBody java.util.Map<String, String> body) {
+    public ResponseEntity<ApiResponse<String>> verifyOtp(@RequestBody Map<String, String> body) {
         return ResponseEntity.ok(ApiResponse.ok("OTP verified successfully", null));
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody java.util.Map<String, String> body) {
+    public ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody Map<String, String> body) {
         return ResponseEntity.ok(ApiResponse.ok("Reset link sent to " + body.get("email"), null));
     }
 }

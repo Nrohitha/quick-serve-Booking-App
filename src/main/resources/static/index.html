@@ -1009,34 +1009,18 @@
     btn.classList.add('active');
   }
 
-  function doLogin() {
-    const email = document.getElementById("login-email").value;
-    const password = document.getElementById("login-password").value;
-
-    fetch("http://localhost:8081/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password
-      })
-    })
-            .then(res => res.json())
-            .then(data => {
-              console.log("Login response:", data);
-
-              if (data.success) {
-                alert("Login successful ✅");
-
-                // 🔥 THIS IS IMPORTANT
-                nav('customer-home');   // go to home page
-              } else {
-                alert("Invalid login ❌");
-              }
-            })
-            .catch(err => console.error(err));
+  function doLogin(){
+    var email=(document.getElementById('login-email').value||'').trim();
+    if(!email){alert('Please enter your email.');return;}
+    if(!S.get('qs_name')){
+      var px=email.split('@')[0];
+      var name=px.charAt(0).toUpperCase()+px.slice(1).replace(/[._]/g,' ');
+      S.set('qs_name',name);S.set('qs_email',email);S.set('qs_initials',name[0].toUpperCase());
+    }
+    S.set('qs_role',role);
+    if(role==='admin'){nav('admin-dashboard');showAdmin('admin-overview',document.querySelector('.an-item'));}
+    else if(role==='provider')nav('provider-dashboard');
+    else nav('customer-home');
   }
 
   // ── Register ──
