@@ -40,10 +40,20 @@ public class DTOs {
     public static class BookingRequest {
         private Long providerId;
         private String serviceName;
+        private String service;
+        private String email;
         private String bookingDate;
         private String bookingTime;
         private String address;
         private java.math.BigDecimal amount;
+        public String getService() {
+            return service;
+        }
+
+            public String getEmail() {
+                return email;
+            }
+
     }
 
     @Data
